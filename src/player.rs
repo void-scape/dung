@@ -1,4 +1,5 @@
 use crate::{
+    equipment::{EquipmentOf, HealthUnit, ShieldUnit},
     input::Move,
     tile::{MoveIntent, Solid, TilePosition, TileSprite, TileZ},
 };
@@ -19,7 +20,9 @@ impl TileSprite {
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Startup, |mut commands: Commands| {
-        commands.spawn((Player, TilePosition::new(0, 0)));
+        let player = commands.spawn((Player, TilePosition::new(0, 0))).id();
+        commands.spawn((HealthUnit(100), EquipmentOf(player)));
+        commands.spawn((ShieldUnit(100), EquipmentOf(player)));
     })
     .add_observer(move_player);
 }

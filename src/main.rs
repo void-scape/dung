@@ -13,6 +13,7 @@ pub const TILE_SIZE: usize = 16;
 
 mod arena;
 mod enemy;
+mod equipment;
 mod mapgen;
 mod tile;
 
@@ -48,6 +49,7 @@ fn main() {
         arena::plugin,
         player::plugin,
         battle::plugin,
+        equipment::plugin,
     ))
     .init_state::<GameState>()
     .add_systems(Startup, camera);

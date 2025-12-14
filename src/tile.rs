@@ -27,20 +27,34 @@ pub fn plugin(app: &mut App) {
 #[component(immutable)]
 pub struct MoveIntent(pub IVec2);
 
+#[derive(EntityEvent)]
+pub struct CollisionEvent {
+    #[event_target]
+    pub target: Entity,
+    pub collider: Entity,
+}
+
 fn move_object(
     data: Start<(Entity, &TilePosition, &MoveIntent)>,
-    solid: PositionQuery<(), With<Solid>>,
+    solid: PositionQuery<Entity, With<Solid>>,
     mut commands: Commands,
 ) {
     let (entity, position, intent) = data.into_inner();
 
     let new_position = TilePosition(position.0 + intent.0);
 
-    let mut entity = commands.entity(entity);
-    entity.remove::<MoveIntent>();
+    let mut entity_commands = commands.entity(entity);
+    entity_commands.remove::<MoveIntent>();
 
     if solid.iter(&new_position).count() == 0 {
-        entity.insert(new_position);
+        entity_commands.insert(new_position);
+    } else {
+        for collider in solid.iter(&new_position) {
+            commands.trigger(CollisionEvent {
+                target: entity,
+                collider,
+            });
+        }
     }
 }
 

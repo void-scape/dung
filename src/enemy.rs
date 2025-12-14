@@ -15,12 +15,16 @@ fn spawn_enemy(mut commands: Commands) {
     commands.spawn((Droid, TilePosition(IVec2::new(10, 10))));
 }
 
+#[derive(Default, Component)]
+pub struct Enemy;
+
 #[derive(Component)]
 #[require(
     TileSprite::DROID,
     WalkTimer::from_secs_prob(0.2, 0.2),
     TileZ(1),
-    Solid
+    Solid,
+    Enemy
 )]
 pub struct Droid;
 

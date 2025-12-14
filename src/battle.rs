@@ -1,5 +1,6 @@
 use std::marker::PhantomData;
 
+use crate::{GameState, enemy::Enemy, player::Player, tile::CollisionEvent};
 use bevy::{
     color::palettes::css::GRAY,
     ecs::{lifecycle::HookContext, system::IntoObserverSystem, world::DeferredWorld},
@@ -7,33 +8,51 @@ use bevy::{
 };
 use bevy_frp::{SignalExt, TQuery};
 
+pub fn plugin(app: &mut App) {
+    app.add_sub_state::<BattleState>()
+        .add_systems(OnEnter(GameState::Arena), |mut commands: Commands| {
+            let battle_screen = battle_screen(commands.reborrow());
+            commands.spawn((
+                Node {
+                    width: percent(100),
+                    height: percent(100),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    ..default()
+                },
+                children![battle_screen],
+            ));
+        })
+        .add_observer(enter_battle);
+}
+
+fn enter_battle(
+    collision: On<CollisionEvent>,
+    mut commands: Commands,
+    player: Query<(), With<Player>>,
+    enemy: Query<(), With<Enemy>>,
+) {
+    if player.contains(collision.target) && enemy.contains(collision.collider)
+        || player.contains(collision.collider) && enemy.contains(collision.target)
+    {
+        commands.set_state(GameState::Arena);
+    }
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, SubStates)]
+#[source(GameState = GameState::Arena)]
 pub enum BattleState {
+    #[default]
     Player,
     PlayerResult,
     EnemyResult,
     Complete(BattleComplete),
 }
 
-enum BattleComplete {
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum BattleComplete {
     Win,
     Loss,
-}
-
-pub fn plugin(app: &mut App) {
-    app.add_systems(Startup, |mut commands: Commands| {
-        let battle_screen = battle_screen(commands.reborrow());
-
-        // commands.spawn((
-        //     Node {
-        //         width: percent(100),
-        //         height: percent(100),
-        //         align_items: AlignItems::Center,
-        //         justify_content: JustifyContent::Center,
-        //         ..default()
-        //     },
-        //     children![battle_screen],
-        // ));
-    });
 }
 
 fn battle_screen(mut commands: Commands) -> impl Bundle + use<> {
