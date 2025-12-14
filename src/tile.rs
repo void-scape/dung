@@ -1,5 +1,5 @@
 use crate::TILE_SIZE;
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::{color::palettes::tailwind::GREEN_300, prelude::*, sprite::Anchor};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_atlas)
@@ -28,13 +28,13 @@ pub struct TileSprite {
 impl TileSprite {
     pub const WALL: Self = Self {
         ascii: b'x',
-        fg: Color::WHITE,
+        fg: Color::Srgba(GREEN_300),
         bg: Color::BLACK,
     };
 
     pub const FLOOR: Self = Self {
         ascii: b'.',
-        fg: Color::WHITE,
+        fg: Color::Srgba(GREEN_300),
         bg: Color::BLACK,
     };
 }

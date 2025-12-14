@@ -8,6 +8,7 @@ pub const WIDTH: usize = 1024;
 pub const HEIGHT: usize = 1024;
 pub const TILE_SIZE: usize = 16;
 
+mod enemy;
 mod mapgen;
 mod tile;
 
@@ -35,7 +36,7 @@ fn main() {
         ReactPlugin,
         input::InputPlugin,
     ))
-    .add_plugins((tile::plugin, mapgen::plugin))
+    .add_plugins((tile::plugin, mapgen::plugin, enemy::plugin))
     .add_systems(Startup, camera);
 
     app.run();
