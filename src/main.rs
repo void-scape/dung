@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_enhanced_input::EnhancedInputPlugin;
 use bevy_frp::ReactPlugin;
 use bevy_seedling::SeedlingPlugin;
 
@@ -35,8 +36,15 @@ fn main() {
         ),
         SeedlingPlugin::default(),
         ReactPlugin,
+        EnhancedInputPlugin,
     ))
-    .add_plugins((tile::plugin, mapgen::plugin, input::plugin, enemy::plugin))
+    .add_plugins((
+        tile::plugin,
+        mapgen::plugin,
+        input::plugin,
+        enemy::plugin,
+        player::plugin,
+    ))
     .add_systems(Startup, camera);
 
     app.run();

@@ -45,7 +45,7 @@ fn move_object(
 #[derive(Resource, Deref, Default)]
 pub struct TileIndex(HashMap<TilePosition, Vec<Entity>>);
 
-#[derive(Component, Deref, DerefMut, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Component, Default, Deref, DerefMut, Clone, Copy, PartialEq, Eq, Hash)]
 #[require(Transform, TileZ)]
 #[component(immutable)]
 pub struct TilePosition(pub IVec2);
@@ -54,6 +54,10 @@ pub struct TilePosition(pub IVec2);
 pub struct TileZ(pub i32);
 
 impl TilePosition {
+    pub fn new(x: i32, y: i32) -> Self {
+        Self(IVec2::new(x, y))
+    }
+
     fn update_transform(data: Start<(Entity, &TilePosition, &TileZ)>, mut commands: Commands) {
         let (entity, &position, &z) = data.into_inner();
 

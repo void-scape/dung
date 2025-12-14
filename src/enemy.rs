@@ -1,4 +1,4 @@
-use crate::tile::{MoveIntent, TilePosition, TileSprite, TileZ};
+use crate::tile::{MoveIntent, Solid, TilePosition, TileSprite, TileZ};
 use bevy::{color::palettes::tailwind::BLUE_300, prelude::*};
 use bevy_rand::{global::GlobalRng, prelude::WyRand};
 use rand::{Rng, seq::IteratorRandom};
@@ -13,7 +13,12 @@ fn spawn_enemy(mut commands: Commands) {
 }
 
 #[derive(Component)]
-#[require(TileSprite::DROID, WalkTimer::from_secs_prob(0.2, 0.2), TileZ(1))]
+#[require(
+    TileSprite::DROID,
+    WalkTimer::from_secs_prob(0.2, 0.2),
+    TileZ(1),
+    Solid
+)]
 pub struct Droid;
 
 impl TileSprite {

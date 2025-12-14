@@ -1,23 +1,40 @@
-use bevy::prelude::*;
+use crate::{
+    input::Move,
+    tile::{MoveIntent, Solid, TilePosition, TileSprite, TileZ},
+};
+use bevy::{color::palettes::css::WHITE, prelude::*};
 use bevy_enhanced_input::prelude::Fire;
 
-use crate::{input::Move, tile::PositionQuery};
-
 #[derive(Component)]
+#[require(TilePosition, TileSprite::PLAYER, TileZ(1), Solid)]
 pub struct Player;
 
-pub fn plugin(app: &mut App) {
-    // app.add_systems(Startp, |mut commands: Commands| {
-    //     commands.spawn(Player);
-    // })
+impl TileSprite {
+    pub const PLAYER: Self = Self {
+        ascii: b'p',
+        fg: Color::Srgba(WHITE),
+        bg: Color::BLACK,
+    };
 }
 
-// fn cool(tile_stuff: PositionQuery<Entity, With<Solid>>) {
-//     if tile_stuff.iter(&some_position).count() > 0 {
-//         // wow cool
-//     }
-// }
+pub fn plugin(app: &mut App) {
+    app.add_systems(Startup, |mut commands: Commands| {
+        commands.spawn((Player, TilePosition::new(0, 0)));
+    })
+    .add_observer(move_player);
+}
 
-// fn move_player(trigger: On<Fire<Move>>, player: Single<>) {
+fn move_player(
+    trigger: On<Fire<Move>>,
+    player: Single<Entity, With<Player>>,
+    mut commands: Commands,
+) {
+    let direction = trigger.value;
 
-// }
+    let x = direction.x.round() as i32;
+    let y = direction.y.round() as i32;
+
+    commands
+        .entity(*player)
+        .insert(MoveIntent(IVec2::new(x, y)));
+}

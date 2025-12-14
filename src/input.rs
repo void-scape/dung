@@ -3,7 +3,8 @@ use bevy::prelude::*;
 use bevy_enhanced_input::prelude::*;
 
 pub fn plugin(app: &mut App) {
-    app.add_observer(inject_bindings);
+    app.add_input_context::<Player>()
+        .add_observer(inject_bindings);
 }
 
 #[derive(InputAction)]
@@ -15,8 +16,10 @@ fn inject_bindings(trigger: On<Insert, Player>, mut commands: Commands) {
         (
             Action::<Move>::new(),
             DeadZone::default(),
+            Pulse::new(0.2),
             Bindings::spawn((
                 Cardinal::wasd_keys(),
+                Cardinal::arrows(),
                 Axial::left_stick(),
             )),
         ),
