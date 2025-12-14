@@ -1,16 +1,10 @@
+use crate::player::Player;
 use bevy::prelude::*;
 use bevy_enhanced_input::prelude::*;
 
-pub struct InputPlugin;
-
-impl Plugin for InputPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_observer(inject_bindings);
-    }
+pub fn plugin(app: &mut App) {
+    app.add_observer(inject_bindings);
 }
-
-#[derive(Component)]
-pub struct Player;
 
 #[derive(InputAction)]
 #[action_output(Vec2)]

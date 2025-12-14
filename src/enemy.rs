@@ -1,4 +1,4 @@
-use crate::{TILE_SIZE, tile::TileSprite};
+use crate::tile::{MoveIntent, TilePosition, TileSprite, TileZ};
 use bevy::{color::palettes::tailwind::BLUE_300, prelude::*};
 use bevy_rand::{global::GlobalRng, prelude::WyRand};
 use rand::{Rng, seq::IteratorRandom};
@@ -9,14 +9,11 @@ pub fn plugin(app: &mut App) {
 }
 
 fn spawn_enemy(mut commands: Commands) {
-    commands.spawn((
-        Droid,
-        Transform::from_xyz(TILE_SIZE as f32 * 10.0, TILE_SIZE as f32 * 10.0, 2.0),
-    ));
+    commands.spawn((Droid, TilePosition(IVec2::new(10, 10))));
 }
 
 #[derive(Component)]
-#[require(TileSprite::DROID, WalkTimer::from_secs_prob(0.2, 0.2))]
+#[require(TileSprite::DROID, WalkTimer::from_secs_prob(0.2, 0.2), TileZ(1))]
 pub struct Droid;
 
 impl TileSprite {
@@ -46,27 +43,30 @@ impl WalkTimer {
 }
 
 #[derive(Default, Component)]
-struct LastWalk(Vec2);
+struct LastWalk(IVec2);
 
 fn walk(
     time: Res<Time>,
-    mut timers: Query<(&mut WalkTimer, &mut LastWalk, &mut Transform)>,
+    mut timers: Query<(Entity, &mut WalkTimer, &mut LastWalk)>,
     mut rng: Single<&mut WyRand, With<GlobalRng>>,
+    mut commands: Commands,
 ) {
-    for (mut timer, mut last_walk, mut transform) in timers.iter_mut() {
+    for (entity, mut timer, mut last_walk) in timers.iter_mut() {
         timer.timer.tick(time.delta());
         if timer.timer.just_finished() && rng.random_range(0.0..=1.0) <= timer.prob {
             let dir = [
-                Vec2::new(-1.0, 0.0),
-                Vec2::new(1.0, 0.0),
-                Vec2::new(0.0, -1.0),
-                Vec2::new(0.0, 1.0),
+                IVec2::new(-1, 0),
+                IVec2::new(1, 0),
+                IVec2::new(0, -1),
+                IVec2::new(0, 1),
             ]
             .into_iter()
             .filter(|dir| *dir != last_walk.0)
             .choose(&mut rng)
             .unwrap();
-            transform.translation += (dir * TILE_SIZE as f32).extend(0.0);
+
+            commands.entity(entity).insert(MoveIntent(dir));
+
             last_walk.0 = -dir;
         }
     }

@@ -5,7 +5,7 @@ edition = "2024"
 
 [features]
 default = ["debug"]
-debug = ["bevy/dynamic_linking"]
+debug = ["bevy/dynamic_linking", "bevy/debug"]
 
 [dependencies]
 bevy = { version = "0.17", default-features = false, features = [

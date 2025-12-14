@@ -3,6 +3,7 @@ use bevy_frp::ReactPlugin;
 use bevy_seedling::SeedlingPlugin;
 
 mod input;
+mod player;
 
 pub const WIDTH: usize = 1024;
 pub const HEIGHT: usize = 1024;
@@ -34,9 +35,8 @@ fn main() {
         ),
         SeedlingPlugin::default(),
         ReactPlugin,
-        input::InputPlugin,
     ))
-    .add_plugins((tile::plugin, mapgen::plugin, enemy::plugin))
+    .add_plugins((tile::plugin, mapgen::plugin, input::plugin, enemy::plugin))
     .add_systems(Startup, camera);
 
     app.run();

@@ -1,4 +1,4 @@
-use crate::tile::{Floor, Wall};
+use crate::tile::{Floor, TilePosition, Wall};
 pub use bevy::prelude::*;
 
 pub fn plugin(app: &mut App) {
@@ -20,7 +20,8 @@ fn spawn_perlin_level(mut commands: Commands) {
                 } else {
                     commands.spawn(Floor)
                 };
-            entity.insert(Transform::from_xyz(x as f32 * 16.0, y as f32 * 16.0, 0.0));
+
+            entity.insert(TilePosition(IVec2::new(x, y)));
         }
     }
 }
