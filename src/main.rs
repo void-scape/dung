@@ -3,6 +3,7 @@ use bevy_enhanced_input::EnhancedInputPlugin;
 use bevy_frp::ReactPlugin;
 use bevy_seedling::SeedlingPlugin;
 
+mod battle;
 mod input;
 mod player;
 
@@ -46,6 +47,7 @@ fn main() {
         enemy::plugin,
         arena::plugin,
         player::plugin,
+        battle::plugin,
     ))
     .init_state::<GameState>()
     .add_systems(Startup, camera);
