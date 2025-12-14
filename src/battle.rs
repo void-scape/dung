@@ -23,16 +23,16 @@ pub fn plugin(app: &mut App) {
     app.add_systems(Startup, |mut commands: Commands| {
         let battle_screen = battle_screen(commands.reborrow());
 
-        commands.spawn((
-            Node {
-                width: percent(100),
-                height: percent(100),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
-            children![battle_screen],
-        ));
+        // commands.spawn((
+        //     Node {
+        //         width: percent(100),
+        //         height: percent(100),
+        //         align_items: AlignItems::Center,
+        //         justify_content: JustifyContent::Center,
+        //         ..default()
+        //     },
+        //     children![battle_screen],
+        // ));
     });
 }
 
