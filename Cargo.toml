@@ -29,10 +29,14 @@ bevy_rand = { version = "0.12", default-features = false, features = [
 	"thread_local_entropy",
 	"wyrand",
 ] }
+bevy_seedling = { version = "0.6.1", default-features = false, features = ["rand", "ogg", "wav"] }
+bevy_query_observer = "0.1.0"
+bevy_frp = { git = "https://github.com/CorvusPrudens/bevy_frp.git" }
+bevy_enhanced_input = "0.20.0"
 
 # Enable a small amount of optimization in the dev profile.
 [profile.dev]
-opt-level = 1
+opt-level = 0
 
 # Enable a large amount of optimization in the dev profile for dependencies.
 [profile.dev.package."*"]

@@ -1,4 +1,8 @@
 use bevy::prelude::*;
+use bevy_frp::ReactPlugin;
+use bevy_seedling::SeedlingPlugin;
+
+mod input;
 
 fn main() {
     let mut app = App::new();
@@ -14,6 +18,9 @@ fn main() {
         bevy_rand::prelude::EntropyPlugin::<bevy_rand::prelude::WyRand>::with_seed(
             69u64.to_le_bytes(),
         ),
+        SeedlingPlugin::default(),
+        ReactPlugin,
+        input::InputPlugin,
     ))
     .add_systems(Startup, (camera, spawn_tiles));
 
