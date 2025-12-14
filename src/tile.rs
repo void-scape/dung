@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use crate::TILE_SIZE;
 use bevy::{
     color::palettes::tailwind::GREEN_300,
@@ -258,4 +260,45 @@ fn spawn_atlas(
             None,
         )),
     });
+}
+
+#[derive(Clone, Copy)]
+pub enum TextAnchor {
+    TopLeft,
+    Center,
+}
+
+pub fn text_tiles(
+    str: &str,
+    x: i32,
+    y: i32,
+    anchor: TextAnchor,
+) -> impl Iterator<Item = (TileSprite, Vec2)> {
+    let tx = x as f32;
+    let ty = y as f32;
+
+    let lines = str.lines().count();
+    str.lines().enumerate().flat_map(move |(y, line)| {
+        line.as_bytes().iter().enumerate().map(move |(x, byte)| {
+            let position = match anchor {
+                TextAnchor::Center => Vec2::new(
+                    (x as f32 + tx - (line.len() / 2) as f32) * TILE_SIZE as f32,
+                    (-(y as f32) + ty + (lines / 2) as f32) * TILE_SIZE as f32,
+                ),
+                TextAnchor::TopLeft => Vec2::new(
+                    (x as f32 + tx) * TILE_SIZE as f32,
+                    (-(y as f32) + ty) * TILE_SIZE as f32,
+                ),
+            };
+
+            (
+                TileSprite {
+                    ascii: *byte,
+                    fg: Color::WHITE,
+                    bg: Color::BLACK,
+                },
+                position,
+            )
+        })
+    })
 }

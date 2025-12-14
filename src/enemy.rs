@@ -1,11 +1,14 @@
-use crate::tile::{MoveIntent, Solid, TilePosition, TileSprite, TileZ};
+use crate::{
+    GameState,
+    tile::{MoveIntent, Solid, TilePosition, TileSprite, TileZ},
+};
 use bevy::{color::palettes::tailwind::BLUE_300, prelude::*};
 use bevy_rand::{global::GlobalRng, prelude::WyRand};
 use rand::{Rng, seq::IteratorRandom};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_enemy)
-        .add_systems(Update, walk);
+        .add_systems(Update, walk.run_if(in_state(GameState::Overworld)));
 }
 
 fn spawn_enemy(mut commands: Commands) {

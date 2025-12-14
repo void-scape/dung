@@ -10,6 +10,7 @@ pub const WIDTH: usize = 1024;
 pub const HEIGHT: usize = 1024;
 pub const TILE_SIZE: usize = 16;
 
+mod arena;
 mod enemy;
 mod mapgen;
 mod tile;
@@ -43,11 +44,37 @@ fn main() {
         mapgen::plugin,
         input::plugin,
         enemy::plugin,
+        arena::plugin,
         player::plugin,
     ))
+    .init_state::<GameState>()
     .add_systems(Startup, camera);
 
+    app.add_systems(Update, enter_exit_arena);
+
     app.run();
+}
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+pub enum GameState {
+    #[default]
+    Overworld,
+    Arena,
+}
+
+fn enter_exit_arena(
+    mut commands: Commands,
+    input: Res<ButtonInput<KeyCode>>,
+    mut in_arena: Local<bool>,
+) {
+    if input.just_pressed(KeyCode::KeyP) {
+        if *in_arena {
+            commands.set_state(GameState::Overworld);
+        } else {
+            commands.set_state(GameState::Arena);
+        }
+        *in_arena = !*in_arena;
+    }
 }
 
 #[cfg(not(feature = "debug"))]
