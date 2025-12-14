@@ -4,6 +4,13 @@ use bevy_seedling::SeedlingPlugin;
 
 mod input;
 
+pub const WIDTH: usize = 1024;
+pub const HEIGHT: usize = 1024;
+pub const TILE_SIZE: usize = 16;
+
+mod mapgen;
+mod tile;
+
 fn main() {
     let mut app = App::new();
 
@@ -14,7 +21,13 @@ fn main() {
     // app.set_error_handler(bevy::ecs::error::warn);
 
     app.add_plugins((
-        DefaultPlugins,
+        DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                resolution: [WIDTH as u32, HEIGHT as u32].into(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        }),
         bevy_rand::prelude::EntropyPlugin::<bevy_rand::prelude::WyRand>::with_seed(
             69u64.to_le_bytes(),
         ),
@@ -22,7 +35,8 @@ fn main() {
         ReactPlugin,
         input::InputPlugin,
     ))
-    .add_systems(Startup, (camera, spawn_tiles));
+    .add_plugins((tile::plugin, mapgen::plugin))
+    .add_systems(Startup, camera);
 
     app.run();
 }
@@ -43,30 +57,4 @@ fn close_on_escape(input: Res<ButtonInput<KeyCode>>, mut writer: MessageWriter<A
 
 fn camera(mut commands: Commands) {
     commands.spawn(Camera2d);
-}
-
-fn spawn_tiles(
-    mut commands: Commands,
-    server: Res<AssetServer>,
-    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-) {
-    let image = server.load("anno16.png");
-    let atlas = atlas_layouts.add(TextureAtlasLayout::from_grid(
-        UVec2::splat(16),
-        16,
-        16,
-        None,
-        None,
-    ));
-
-    commands.spawn((
-        Sprite::from_atlas_image(
-            image,
-            TextureAtlas {
-                layout: atlas,
-                index: 1,
-            },
-        ),
-        Transform::default(),
-    ));
 }
