@@ -3,19 +3,18 @@ use bevy_enhanced_input::EnhancedInputPlugin;
 use bevy_frp::ReactPlugin;
 use bevy_seedling::SeedlingPlugin;
 
-mod battle;
+mod arena;
+mod enemy;
+mod equipment;
 mod input;
+mod mapgen;
+mod observer;
 mod player;
+mod tile;
 
 pub const WIDTH: usize = 1024;
 pub const HEIGHT: usize = 1024;
 pub const TILE_SIZE: usize = 16;
-
-mod arena;
-mod enemy;
-mod equipment;
-mod mapgen;
-mod tile;
 
 fn main() {
     let mut app = App::new();
@@ -48,7 +47,6 @@ fn main() {
         enemy::plugin,
         arena::plugin,
         player::plugin,
-        battle::plugin,
         equipment::plugin,
     ))
     .init_state::<GameState>()

@@ -1,5 +1,6 @@
 use crate::tile::{TextAnchor, text_tiles};
 use bevy::prelude::*;
+use bevy_query_observer::{AddStartObserver, Start};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(
@@ -9,12 +10,29 @@ pub fn plugin(app: &mut App) {
             display_equipment,
         )
             .chain(),
-    );
+    )
+    .add_start_observer(HealthUnit::observe_insertion);
 }
 
-#[derive(Component)]
+#[derive(Component, Clone, Deref, DerefMut, Default)]
+pub struct Health(pub i32);
+
+#[derive(Component, Clone, Copy)]
 #[require(Name::new("Health Unit"), EquipmentDisplay, Tooltips::HEALTH_UNIT)]
-pub struct HealthUnit(pub usize);
+#[component(immutable)]
+pub struct HealthUnit(pub i32);
+
+impl HealthUnit {
+    fn observe_insertion(data: Start<(&Self, &EquipmentOf)>, mut commands: Commands) {
+        let (&health, target) = data.into_inner();
+
+        commands
+            .entity(target.0)
+            .entry::<Health>()
+            .or_default()
+            .and_modify(move |mut h| h.0 += health.0);
+    }
+}
 
 fn health_unit_display(mut units: Query<(&HealthUnit, &mut EquipmentDisplay)>) {
     for (unit, mut display) in units.iter_mut() {
@@ -24,7 +42,7 @@ fn health_unit_display(mut units: Query<(&HealthUnit, &mut EquipmentDisplay)>) {
 
 #[derive(Component)]
 #[require(Name::new("Shield Unit"), EquipmentDisplay, Tooltips::SHIELD_UNIT)]
-pub struct ShieldUnit(pub usize);
+pub struct ShieldUnit(pub i32);
 
 fn shield_unit_display(mut units: Query<(&ShieldUnit, &mut EquipmentDisplay)>) {
     for (unit, mut display) in units.iter_mut() {
